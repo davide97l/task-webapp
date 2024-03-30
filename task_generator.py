@@ -1,6 +1,7 @@
 import random
 from datetime import datetime, timedelta
 
+
 def generate_random_task():
     """
     Generates a random task with author, deadline, title, and description.
