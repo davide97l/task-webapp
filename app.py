@@ -45,8 +45,23 @@ async def create_task(request: Request):
 
 @app.get("/tasks")
 async def get_all_tasks():
-    # Logic to retrieve all tasks from database and return them as a list
-    ...
+    try:
+        client = connect_db()
+        db = client[db_name]
+        tasks_collection = db.get_collection(collection)
+
+        # Find all tasks in the collection
+        tasks_list = []
+        tasks = tasks_collection.find()
+        for task in tasks:
+            del task['_id']
+            tasks_list.append(task)
+
+        return tasks_list
+
+    except Exception as e:
+        print(f"Error retrieving tasks: {e}")
+        raise HTTPException(status_code=500, detail="Internal server error")
 
 @app.get("/tasks/{task_id}")
 async def get_task_by_id(task_id: str):
