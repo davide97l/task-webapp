@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
 from datetime import datetime
+from database import connect_to_db
 
 app = FastAPI()
 
@@ -15,7 +16,6 @@ class Task(BaseModel):
 # Endpoints for CRUD operations
 @app.post("/tasks")
 async def create_task(task: Task):
-    # Logic to insert task into database and return the created task
     ...
 
 @app.get("/tasks")
