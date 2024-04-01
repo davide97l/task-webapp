@@ -1,5 +1,5 @@
 body {
-  font-family: sans-serif; /* Choose a preferred font family */
+  font-family: sans-serif;
   margin: 0;
   padding: 20px;
 }
@@ -11,13 +11,13 @@ h1 {
 
 .task-container {
   display: inline-block;
-  width: 23%; /* Adjust width for 4 columns (considering margins) */
+  width: 23%;
   margin: 10px;
   border: 1px solid #ddd;
-  border-radius: 5px; /* Add rounded corners */
+  border-radius: 5px;
   padding: 15px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow effect */
-  background-color: #fff; /* Light background color */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  background-color: #fff;
 }
 
 .task-container h3 {
@@ -26,20 +26,20 @@ h1 {
 
 .task-container p {
   margin-bottom: 5px;
-  font-size: 0.9em; /* Adjust font size for details */
+  font-size: 0.9em;
 }
 
 .task-container button {
-  background-color: #007bff; /* Blue button color */
-  color: #fff; /* White text color */
+  background-color: #007bff;
+  color: #fff;
   border: none;
   padding: 5px 10px;
-  border-radius: 3px; /* Rounded corners for button */
-  cursor: pointer; /* Indicate clickable element */
+  border-radius: 3px;
+  cursor: pointer;
 }
 
 .task-container button:hover {
-  background-color: #0069d9; /* Darker blue on hover */
+  background-color: #0069d9;
 }
 
 label {
@@ -53,15 +53,15 @@ input, textarea {
   padding: 0.5rem;
   border: 1px solid #ccc;
   border-radius: 4px;
-  box-sizing: border-box;  /* Ensures padding doesn't affect width */
+  box-sizing: border-box;
 }
 
 textarea {
-  min-height: 100px;  /* Adjust minimum height for description textarea */
+  min-height: 100px;
 }
 
 button[type="submit"] {
-  background-color: #4CAF50;  /* Green color */
+  background-color: #007bff;
   color: white;
   padding: 0.75rem 1rem;
   border: none;
@@ -70,7 +70,7 @@ button[type="submit"] {
 }
 
 button[type="submit"]:hover {
-  background-color: #45A049;  /* Darker green on hover */
+  background-color: #0069d9;
 }
 
 nav {
@@ -81,11 +81,11 @@ nav {
 }
 
 .create-task-label {
-  display: inline-block;  /* Make the label behave like inline content */
-  padding: 5px 10px;  /* Add some padding for visual separation */
-  border: 1px solid #ccc;  /* Simulate a label-like border */
-  border-radius: 3px;  /* Add rounded corners for better look */
-  cursor: pointer;  /* Indicate clickable behavior */
+  display: inline-block;
+  padding: 5px 10px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  cursor: pointer;
 }
 
 .create-task-label a {
@@ -94,7 +94,7 @@ nav {
   font-weight: bold;
 }
 
-/* New style to move the label to the left */
 .create-task-label {
-  margin-right: auto;  /* Push the label to the left edge of the navigation bar */
+  margin-right: auto;
 }
+
