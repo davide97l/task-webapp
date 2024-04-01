@@ -6,8 +6,10 @@ from fastapi import HTTPException
 from datetime import datetime, timedelta
 import random
 from bson import ObjectId
+from fastapi.staticfiles import StaticFiles
 
 app = FastAPI()
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 db_name = 'hw'
 collection = 'tasks'
@@ -117,7 +119,12 @@ async def update_task(task_id: str, updated_data: dict = None):
         print(f"Error updating task: {e}")
         raise HTTPException(status_code=500, detail="Internal server error")
 
+@app.get("/")
+def read_root():
+    return {"Hello": "World"}
+
 
 if __name__ == '__main__':
     import uvicorn
+    from fastapi.templating import Jinja2Templates
     uvicorn.run("app:app", host="0.0.0.0", port=8000, reload=True)

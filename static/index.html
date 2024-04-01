@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Task Manager</title>
+    <link rel="stylesheet" href="style.css">
+
+</head>
+<body>
+<h1>Task Manager</h1>
+<div id="tasks-container"></div>
+
+<script>
+    const tasksContainer = document.getElementById('tasks-container');
+
+    // Fetch tasks from your API (replace with your actual logic)
+    fetch('http://localhost:8000/tasks')
+      .then(response => response.json())
+      .then(tasks => {
+        tasks.forEach(task => {
+          const taskContainer = document.createElement('div');
+          taskContainer.classList.add('task-container');
+
+          // Format deadline (assuming you have a deadline property)
+          const formattedDeadline = new Date(task.deadline).toLocaleDateString(); // Adjust formatting as needed
+
+          taskContainer.innerHTML = `<h3>${task.title}</h3>
+          <p>${task.description || 'No description'}</p>
+          <p><strong>Deadline:</strong> ${formattedDeadline}</p>
+          <p><strong>Author:</strong> ${task.author || 'Unknown'}</p>
+          <button data-task-id="${task.id}">Details</button>`;
+
+          tasksContainer.appendChild(taskContainer);
+        });
+      });
+
+    // Add click event listener for details buttons
+    tasksContainer.addEventListener('click', (event) => {
+      if (event.target.tagName === 'BUTTON') {
+        const taskId = event.target.dataset.taskId;
+        // Redirect to task details page using the task ID (replace with your logic)
+        window.location.href = `/tasks/${taskId}`; // Adjust URL pattern as needed
+      }
+    });
+  </script>
+</body>
+</html>
