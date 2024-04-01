@@ -1,16 +1,16 @@
 from task_generator import generate_random_task
-from database import connect_db
 import asyncio
+from database import get_tasks_collection, get_db_client, connect_db, DB_NAME, COLLECTION
 
 db_name = 'hw'
 collection = 'tasks'
 
+
 async def create_database_and_collection():
     try:
-        client = connect_db()
-        db = client[db_name]
-        col = db[collection]
-        print(f"Database '{db.name}' and collection '{collection}' created (if they didn't exist).")
+        db = get_db_client()
+        collection = get_tasks_collection(db)
+        print(f"Database '{DB_NAME}' and collection '{COLLECTION}' created (if they didn't exist).")
 
     except Exception as e:
         print(f"Error creating database or collection: {e}")
@@ -33,6 +33,7 @@ async def insert_random_tasks(num_tasks=1):
         print(f"Error inserting tasks: {e}")
 
 
+# Run to populate DB with 3 random tasks
 if __name__ == '__main__':
     asyncio.run(create_database_and_collection())
     asyncio.run(insert_random_tasks(3))

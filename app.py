@@ -9,7 +9,7 @@ from pydantic import BaseModel, Field
 from dotenv import load_dotenv
 import os
 
-from database import connect_db
+from database import get_tasks_collection, get_db_client
 
 load_dotenv()
 
@@ -18,10 +18,6 @@ app.title = "Tasks Manager"
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
-#DB_NAME = 'hw'
-#COLLECTION = 'tasks'
-DB_NAME = os.getenv("DB_NAME")
-COLLECTION = os.getenv("COLLECTION")
 SERVER_PORT = int(os.getenv("SERVER_PORT"))
 
 logging.basicConfig(level=logging.INFO)
@@ -57,33 +53,6 @@ def preprocess_task(task: dict) -> dict:
     task['id'] = str(task['_id'])
     del task['_id']
     return task
-
-
-def get_db_client() -> object:
-    """
-    Get the database client object.
-
-    Returns:
-        object: The database client object.
-    """
-    try:
-        return connect_db()[DB_NAME]
-    except Exception as e:
-        logging.error(f"Failed to connect to database: {e}")
-        raise HTTPException(status_code=500, detail="Failed to connect to database")
-
-
-def get_tasks_collection(db_client) -> object:
-    """
-    Get the tasks collection object.
-
-    Args:
-        db_client (object): The database client object.
-
-    Returns:
-        object: The tasks collection object.
-    """
-    return db_client.get_collection(COLLECTION)
 
 
 @app.post("/create_task", status_code=201)

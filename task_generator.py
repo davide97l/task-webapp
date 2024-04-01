@@ -6,10 +6,6 @@ def generate_random_task():
     """
     Generates a random task with author, deadline, title, and description.
 
-    Args:
-        authors (list, optional): A list of possible authors for the tasks.
-            Defaults to ["Alice", "Bob", "Charlie"].
-
     Returns:
         dict: A dictionary containing the generated task information.
     """
