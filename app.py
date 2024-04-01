@@ -4,10 +4,11 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from bson import ObjectId
 import uvicorn
-from typing import Optional
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, validator
 from dotenv import load_dotenv
 import os
+from datetime import date
+from typing import Optional
 
 from database import get_tasks_collection, get_db_client
 
@@ -27,7 +28,15 @@ class TaskModel(BaseModel):
     title: str = Field(..., min_length=1, max_length=30)
     author: Optional[str] = None
     description: Optional[str] = None
-    deadline: str = None
+    deadline: Optional[str] = None  # "Deadline in YYYY-MM-DD format"
+
+    @validator("deadline")
+    def validate_deadline_format(cls, value):
+        try:
+            date.fromisoformat(str(value))  # Convert to string for parsing
+            return value
+        except ValueError:
+            raise ValueError("Invalid deadline format. Use YYYY-MM-DD")
 
     class Config:
         schema_extra = {
