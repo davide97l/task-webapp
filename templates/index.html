@@ -21,7 +21,7 @@
     const tasksContainer = document.getElementById('tasks-container');
 
     // Fetch tasks from your API (replace with your actual logic)
-    fetch('http://localhost:8000/tasks')
+    fetch('/tasks')
       .then(response => response.json())
       .then(tasks => {
         tasks.forEach(task => {
