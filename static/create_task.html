@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Create New Task</title>
-    <link rel="stylesheet" href="../static/style.css">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 <h1>Create New Task</h1>
@@ -53,7 +53,7 @@
                 console.log('Task created successfully!');
                 // Handle successful creation (e.g., redirect to task list)
                 alert('Task created successfully!');
-                window.location.href = "/static/index.html"; // Redirect to task list page
+                window.location.href = "/"; // Redirect to task list page
               } else {
                 console.error('Error creating task:', response.statusText);
                 alert('Failed to create task. Please try again.');
