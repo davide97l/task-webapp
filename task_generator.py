@@ -1,5 +1,5 @@
 import random
-from datetime import datetime, timedelta
+from datetime import timedelta, date
 
 
 def generate_random_task():
@@ -30,7 +30,8 @@ def generate_random_task():
     description = random.choice(descriptions)
     author = random.choice(authors)
     # Generate deadline within a week from now
-    deadline = datetime.now() + timedelta(days=random.randint(1, 7))
+    deadline = date.today() + timedelta(days=random.randint(1, 7))
+    deadline = deadline.strftime('%Y-%m-%d')
 
     return {
         "title": title,
