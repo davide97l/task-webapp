@@ -1,4 +1,5 @@
 from fastapi import FastAPI,  Request
+from fastapi.responses import RedirectResponse
 from pydantic import BaseModel
 from datetime import datetime
 from database import connect_db
@@ -7,12 +8,22 @@ from datetime import datetime, timedelta
 import random
 from bson import ObjectId
 from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
+import json
+import uvicorn
 
 app = FastAPI()
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
+templates = Jinja2Templates(directory="templates")
+
 db_name = 'hw'
 collection = 'tasks'
+
+def preprocess_task(task: dict):
+    task['id'] = str(task['_id'])
+    del task['_id']
+    return task
 
 # Endpoints for CRUD operations
 @app.post("/create_task")
@@ -38,7 +49,7 @@ async def create_task(request: Request):
         print(f'Task successfully created (ID: {result.inserted_id}): {create_task}')
 
         created_task = tasks_collection.find_one(result.inserted_id)  # Convert to string before using in query
-        del created_task['_id']
+        created_task = preprocess_task(created_task)
         return created_task
 
     except Exception as e:
@@ -56,7 +67,7 @@ async def get_all_tasks():
         tasks_list = []
         tasks = tasks_collection.find()
         for task in tasks:
-            del task['_id']
+            task = preprocess_task(task)
             tasks_list.append(task)
 
         return tasks_list
@@ -66,7 +77,7 @@ async def get_all_tasks():
         raise HTTPException(status_code=500, detail="Internal server error")
 
 @app.get("/tasks/{task_id}")
-async def get_task_by_id(task_id: str):
+async def get_task_by_id(task_id: str, request: Request):
     try:
         client = connect_db()
         db = client[db_name]  # Replace with your database name
@@ -79,8 +90,12 @@ async def get_task_by_id(task_id: str):
 
         print(f'Task successfully retrieved (ID: {task_id}): {task}')
 
-        del task['_id']
-        return task
+        task = preprocess_task(task)
+
+        return templates.TemplateResponse(
+            request=request, name="task-details.html", context={"request": request,
+                                                                "task": task}
+        )
 
     except Exception as e:
         print(f"Error retrieving task: {e}")
@@ -88,6 +103,7 @@ async def get_task_by_id(task_id: str):
 
 @app.put("/tasks/{task_id}")
 async def update_task(task_id: str, updated_data: dict = None):
+    print(task_id, updated_data)
     try:
         client = connect_db()
         db = client[db_name]  # Replace with your database name
@@ -110,21 +126,14 @@ async def update_task(task_id: str, updated_data: dict = None):
         # Optionally, retrieve the updated task document
         updated_task = tasks_collection.find_one({"_id": object_id})
 
+        updated_task = preprocess_task(updated_task)
         print(f'Task successfully updated (ID: {task_id}): {updated_task}')
-
-        del updated_task['_id']
         return updated_task
 
     except Exception as e:
         print(f"Error updating task: {e}")
         raise HTTPException(status_code=500, detail="Internal server error")
 
-@app.get("/")
-def read_root():
-    return {"Hello": "World"}
-
 
 if __name__ == '__main__':
-    import uvicorn
-    from fastapi.templating import Jinja2Templates
     uvicorn.run("app:app", host="0.0.0.0", port=8000, reload=True)

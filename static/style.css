@@ -41,3 +41,34 @@ h1 {
 .task-container button:hover {
   background-color: #0069d9; /* Darker blue on hover */
 }
+
+label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: bold;
+}
+
+input, textarea {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;  /* Ensures padding doesn't affect width */
+}
+
+textarea {
+  min-height: 100px;  /* Adjust minimum height for description textarea */
+}
+
+button[type="submit"] {
+  background-color: #4CAF50;  /* Green color */
+  color: white;
+  padding: 0.75rem 1rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+button[type="submit"]:hover {
+  background-color: #45A049;  /* Darker green on hover */
+}
