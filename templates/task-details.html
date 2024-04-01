@@ -17,6 +17,9 @@
     <label for="title">Title:</label>
     <input type="text" id="title" name="title" required value="{{ task.title }}">
 
+    <label for="author">Author:</label>
+    <input type="text" id="author" name="author" required value="{{ task.author }}">
+
     <label for="description">Description:</label>
     <textarea id="description" name="description" rows="5">{{ task.description }}</textarea>
 
@@ -24,18 +27,22 @@
     <input type="date" id="deadline" name="deadline" value="{{ task.deadline }}">  <button type="submit">Save Changes</button>
 </form>
 
+<a href="/" class="button go-back-button">Go Back</a>
+
 <script>
 const editTaskForm = document.getElementById('edit-task-form');
 editTaskForm.addEventListener('submit', (event) => {
   event.preventDefault(); // Prevent default form submission
 
   // Extract edited data from the form
+  const editedAuthor = document.getElementById('author').value;
   const editedTitle = document.getElementById('title').value;
   const editedDescription = document.getElementById('description').value;
   const editedDeadline = document.getElementById('deadline').value; // Adjust date handling as needed
 
   // Prepare data for update request
   const updatedData = {
+    author: editedAuthor,
     title: editedTitle,
     description: editedDescription,
     deadline: editedDeadline,  // Adjust date format for backend if needed

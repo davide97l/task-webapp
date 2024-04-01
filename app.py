@@ -41,7 +41,7 @@ class TaskModel(BaseModel):
 def preprocess_task(task: dict) -> dict:
     """
     Preprocess a task dictionary to replace '_id' key with 'id'.
-    
+
     Args:
         task (dict): The task dictionary to preprocess.
 
@@ -60,7 +60,11 @@ def get_db_client() -> object:
     Returns:
         object: The database client object.
     """
-    return connect_db()[DB_NAME]
+    try:
+        return connect_db()[DB_NAME]
+    except Exception as e:
+        logging.error(f"Failed to connect to database: {e}")
+        raise HTTPException(status_code=500, detail="Failed to connect to database")
 
 
 def get_tasks_collection(db_client) -> object:
@@ -88,16 +92,22 @@ async def create_task(request: Request, task: TaskModel) -> dict:
     Returns:
         dict: The created task.
     """
-    tasks_collection = get_tasks_collection(get_db_client())
-    task_data = task.dict()
+    try:
+        tasks_collection = get_tasks_collection(get_db_client())
+        task_data = task.dict()
 
-    result = tasks_collection.insert_one(task_data)
-    if not result.inserted_id:
-        raise HTTPException(status_code=400, detail="Failed to create task")
+        result = tasks_collection.insert_one(task_data)
 
-    created_task = preprocess_task(tasks_collection.find_one(result.inserted_id))
-    logging.info(f'Task successfully created {created_task}')
-    return created_task
+        if not result.inserted_id:
+            raise HTTPException(status_code=400, detail="Failed to create task")
+
+        created_task = preprocess_task(tasks_collection.find_one(result.inserted_id))
+        logging.info(f'Task successfully created: {created_task}')
+        return created_task
+
+    except Exception as e:
+        logging.error(f"Failed to create task: {e}")
+        raise HTTPException(status_code=500, detail="Failed to create task")
 
 
 @app.get("/tasks")
@@ -108,10 +118,14 @@ async def get_all_tasks() -> list:
     Returns:
         list: The list of all tasks.
     """
-    tasks_collection = get_tasks_collection(get_db_client())
-    tasks_list = [preprocess_task(task) for task in tasks_collection.find()]
-    logging.debug(f'Retrieved tasks: {tasks_list}')
-    return tasks_list
+    try:
+        tasks_collection = get_tasks_collection(get_db_client())
+        tasks_list = [preprocess_task(task) for task in tasks_collection.find()]
+        logging.debug(f'Retrieved tasks: {tasks_list}')
+        return tasks_list
+    except Exception as e:
+        logging.error(f"Failed to retrieve tasks: {e}")
+        raise HTTPException(status_code=500, detail="Failed to retrieve tasks")
 
 
 @app.get("/tasks/{task_id}")
@@ -126,46 +140,56 @@ async def get_task_by_id(task_id: str, request: Request) -> dict:
     Returns:
         dict: The task data.
     """
-    tasks_collection = get_tasks_collection(get_db_client())
-    task = tasks_collection.find_one({"_id": ObjectId(task_id)})
-    if not task:
-        raise HTTPException(status_code=404, detail=f"Task (ID: {task_id}) not found")
+    try:
+        tasks_collection = get_tasks_collection(get_db_client())
+        task = tasks_collection.find_one({"_id": ObjectId(task_id)})
+        if not task:
+            raise HTTPException(status_code=404, detail=f"Task (ID: {task_id}) not found")
 
-    task = preprocess_task(task)
-    logging.info(f'Task successfully retrieved {task}')
-    return templates.TemplateResponse(
-        request=request, name="task-details.html", context={"request": request, "task": task}
-    )
+        task = preprocess_task(task)
+        logging.info(f'Task successfully retrieved: {task}')
+        return templates.TemplateResponse(
+            request=request, name="task-details.html", context={"request": request, "task": task}
+        )
+    except Exception as e:
+        logging.error(f"Failed to retrieve task: {e}")
+        raise HTTPException(status_code=500, detail="Failed to retrieve task")
 
 
 @app.put("/tasks/{task_id}")
-async def update_task(task_id: str) -> dict:
+async def update_task(task_id: str, updated_data: TaskModel) -> dict:
     """
     Update a task.
 
     Args:
         task_id (str): The ID of the task.
+        updated_data (TaskModel): updated task data
 
     Returns:
         dict: The updated task data.
     """
-    tasks_collection = get_tasks_collection(get_db_client())
+    try:
+        tasks_collection = get_tasks_collection(get_db_client())
 
-    # Find the task to update
-    task = tasks_collection.find_one({"_id": ObjectId(task_id)})
-    if not task:
-        raise HTTPException(status_code=404, detail="Task not found")
+        # Find the task to update
+        task = tasks_collection.find_one({"_id": ObjectId(task_id)})
+        if not task:
+            raise HTTPException(status_code=404, detail="Task not found")
 
-    # Update task data
-    task.update(task.dict())
+        # Update task data
+        updated_data = updated_data.dict()
+        task.update(updated_data)
 
-    # Update the task in the collection
-    tasks_collection.update_one({"_id": ObjectId(task_id)}, {"$set": task})
+        # Update the task in the collection
+        tasks_collection.update_one({"_id": ObjectId(task_id)}, {"$set": task})
 
-    # Optionally, retrieve the updated task document
-    updated_task = preprocess_task(tasks_collection.find_one({"_id": ObjectId(task_id)}))
-    logging.info(f'Task successfully updated {updated_task}')
-    return updated_task
+        # Optionally, retrieve the updated task document
+        updated_task = preprocess_task(tasks_collection.find_one({"_id": ObjectId(task_id)}))
+        logging.info(f'Task successfully updated: {updated_task}')
+        return updated_task
+    except Exception as e:
+        logging.error(f"Failed to update task: {e}")
+        raise HTTPException(status_code=500, detail="Failed to update task")
 
 
 @app.get("/")
