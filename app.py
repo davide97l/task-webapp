@@ -46,10 +46,10 @@ async def create_task(request: Request):
         result = tasks_collection.insert_one(task_data)
         if not result.inserted_id:
             raise HTTPException(status_code=400, detail="Failed to create task")
-        print(f'Task successfully created (ID: {result.inserted_id}): {create_task}')
 
         created_task = tasks_collection.find_one(result.inserted_id)  # Convert to string before using in query
         created_task = preprocess_task(created_task)
+        print(f'Task successfully created (ID: {result.inserted_id}): {created_task}')
         return created_task
 
     except Exception as e:

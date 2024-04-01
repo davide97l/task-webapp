@@ -72,3 +72,29 @@ button[type="submit"] {
 button[type="submit"]:hover {
   background-color: #45A049;  /* Darker green on hover */
 }
+
+nav {
+  background-color: #eee;
+  padding: 10px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.create-task-label {
+  display: inline-block;  /* Make the label behave like inline content */
+  padding: 5px 10px;  /* Add some padding for visual separation */
+  border: 1px solid #ccc;  /* Simulate a label-like border */
+  border-radius: 3px;  /* Add rounded corners for better look */
+  cursor: pointer;  /* Indicate clickable behavior */
+}
+
+.create-task-label a {
+  text-decoration: none;
+  color: #000;
+  font-weight: bold;
+}
+
+/* New style to move the label to the left */
+.create-task-label {
+  margin-right: auto;  /* Push the label to the left edge of the navigation bar */
+}
