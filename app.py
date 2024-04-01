@@ -39,21 +39,55 @@ class TaskModel(BaseModel):
 
 
 def preprocess_task(task: dict) -> dict:
+    """
+    Preprocess a task dictionary to replace '_id' key with 'id'.
+    
+    Args:
+        task (dict): The task dictionary to preprocess.
+
+    Returns:
+        dict: The preprocessed task dictionary.
+    """
     task['id'] = str(task['_id'])
     del task['_id']
     return task
 
 
 def get_db_client() -> object:
+    """
+    Get the database client object.
+
+    Returns:
+        object: The database client object.
+    """
     return connect_db()[DB_NAME]
 
 
 def get_tasks_collection(db_client) -> object:
+    """
+    Get the tasks collection object.
+
+    Args:
+        db_client (object): The database client object.
+
+    Returns:
+        object: The tasks collection object.
+    """
     return db_client.get_collection(COLLECTION)
 
 
 @app.post("/create_task")
 async def create_task(request: Request, task: TaskModel) -> dict:
+    """
+    Create a new task.
+
+    Args:
+        request (Request): The request object.
+        task (TaskModel): The task data.
+
+    Returns:
+        dict: The created task.
+    """
     tasks_collection = get_tasks_collection(get_db_client())
     task_data = task.dict()
 
@@ -68,6 +102,12 @@ async def create_task(request: Request, task: TaskModel) -> dict:
 
 @app.get("/tasks")
 async def get_all_tasks() -> list:
+    """
+    Get all tasks.
+
+    Returns:
+        list: The list of all tasks.
+    """
     tasks_collection = get_tasks_collection(get_db_client())
     tasks_list = [preprocess_task(task) for task in tasks_collection.find()]
     logging.debug(f'Retrieved tasks: {tasks_list}')
@@ -76,6 +116,16 @@ async def get_all_tasks() -> list:
 
 @app.get("/tasks/{task_id}")
 async def get_task_by_id(task_id: str, request: Request) -> dict:
+    """
+    Get a task by its ID.
+
+    Args:
+        task_id (str): The ID of the task.
+        request (Request): The request object.
+
+    Returns:
+        dict: The task data.
+    """
     tasks_collection = get_tasks_collection(get_db_client())
     task = tasks_collection.find_one({"_id": ObjectId(task_id)})
     if not task:
@@ -90,6 +140,15 @@ async def get_task_by_id(task_id: str, request: Request) -> dict:
 
 @app.put("/tasks/{task_id}")
 async def update_task(task_id: str) -> dict:
+    """
+    Update a task.
+
+    Args:
+        task_id (str): The ID of the task.
+
+    Returns:
+        dict: The updated task data.
+    """
     tasks_collection = get_tasks_collection(get_db_client())
 
     # Find the task to update
@@ -111,6 +170,15 @@ async def update_task(task_id: str) -> dict:
 
 @app.get("/")
 async def index(request: Request):
+    """
+    Render the index page.
+
+    Args:
+        request (Request): The request object.
+
+    Returns:
+        TemplateResponse: The rendered index page.
+    """
     context = {"request": request}
     return templates.TemplateResponse("index.html", context=context)
 
