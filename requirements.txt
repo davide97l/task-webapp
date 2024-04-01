@@ -3,4 +3,4 @@ fastapi
 uvicorn
 jinja2
 pydantic
-pydotenv
+python-dotenv
