@@ -6,17 +6,23 @@ from bson import ObjectId
 import uvicorn
 from typing import Optional
 from pydantic import BaseModel, Field
-from datetime import date
+from dotenv import load_dotenv
+import os
 
 from database import connect_db
+
+load_dotenv()
 
 app = FastAPI()
 app.title = "Tasks Manager"
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
-DB_NAME = 'hw'
-COLLECTION = 'tasks'
+#DB_NAME = 'hw'
+#COLLECTION = 'tasks'
+DB_NAME = os.getenv("DB_NAME")
+COLLECTION = os.getenv("COLLECTION")
+SERVER_PORT = int(os.getenv("SERVER_PORT"))
 
 logging.basicConfig(level=logging.INFO)
 
@@ -80,8 +86,8 @@ def get_tasks_collection(db_client) -> object:
     return db_client.get_collection(COLLECTION)
 
 
-@app.post("/create_task")
-async def create_task(request: Request, task: TaskModel) -> dict:
+@app.post("/create_task", status_code=201)
+async def create_task(task: TaskModel) -> dict:
     """
     Create a new task.
 
@@ -110,7 +116,7 @@ async def create_task(request: Request, task: TaskModel) -> dict:
         raise HTTPException(status_code=500, detail="Failed to create task")
 
 
-@app.get("/tasks")
+@app.get("/tasks", status_code=200)
 async def get_all_tasks() -> list:
     """
     Get all tasks.
@@ -128,7 +134,7 @@ async def get_all_tasks() -> list:
         raise HTTPException(status_code=500, detail="Failed to retrieve tasks")
 
 
-@app.get("/tasks/{task_id}")
+@app.get("/tasks/{task_id}", status_code=200)
 async def get_task_by_id(task_id: str, request: Request) -> dict:
     """
     Get a task by its ID.
@@ -156,7 +162,7 @@ async def get_task_by_id(task_id: str, request: Request) -> dict:
         raise HTTPException(status_code=500, detail="Failed to retrieve task")
 
 
-@app.put("/tasks/{task_id}")
+@app.put("/tasks/{task_id}", status_code=200)
 async def update_task(task_id: str, updated_data: TaskModel) -> dict:
     """
     Update a task.
@@ -192,7 +198,7 @@ async def update_task(task_id: str, updated_data: TaskModel) -> dict:
         raise HTTPException(status_code=500, detail="Failed to update task")
 
 
-@app.get("/")
+@app.get("/", status_code=200)
 async def index(request: Request):
     """
     Render the index page.
@@ -208,4 +214,4 @@ async def index(request: Request):
 
 
 if __name__ == '__main__':
-    uvicorn.run("app:app", host="0.0.0.0", port=8000, reload=True)
+    uvicorn.run("app:app", host="0.0.0.0", port=SERVER_PORT, reload=True)

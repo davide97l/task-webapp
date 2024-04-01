@@ -1,0 +1,6 @@
+pymongo
+fastapi
+uvicorn
+jinja2
+pydantic
+pydotenv
